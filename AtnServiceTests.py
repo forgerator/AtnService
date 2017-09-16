@@ -1,7 +1,6 @@
 import unittest
 
 from AtnScrape import AtnScrape
-from AtnService import Atn
 
 
 class AtnServiceTests(unittest.TestCase):
@@ -15,12 +14,5 @@ class AtnServiceTests(unittest.TestCase):
         scrape.generate_player_list(test_string)
 
         self.assertTrue("Andrea Summy" in scrape.players, "Could not find the player in the list")
-
-    def test_get_all_players(self):
-        atn_list = Atn.get_all_players(None)
-        for item in atn_list:
-            print(item)
-        # self.assertEqual('foo'.upper(), 'FOO')
-
 if __name__ == '__main__':
     unittest.main()

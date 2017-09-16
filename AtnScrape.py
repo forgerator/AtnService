@@ -22,22 +22,23 @@ class AtnScrape(scrapy.Spider):
     def after_login(self, response):
         # check login succeed before going on
         if "Access Denied" in str(response.body):
-            self.log("Login failed", level=log.ERROR)
+            self.log("Login failed")
             return
         else:
             # continue scraping with authenticated session...
             return Request(
                 url="https://www.austintennisnet.org/ladder_singles/singles_ladder.php?weekend_ladder=0",
-                callback=self.generate_player_list)
+                callback=self.parse_ladder_listing)
 
-    def generate_player_list(self, response):
+    def parse_ladder_listing(self, response):
+        self.generate_player_list(str(response.body))
+
+    def generate_player_list(self, response_str):
         """Generates a list of players using BeautifulSoup for parsing the html"""
 
-        soup = BeautifulSoup(str(response.body))
+        soup = BeautifulSoup(response_str)
 
         for anchor in soup.find_all('a', href=lambda x: x and 'player_information.php?player_lookup_number' in x):
             player_name = str(anchor.contents[0]).replace("\\n", "").strip()
             self.players.append(player_name)
-
-
-
+            print(player_name)
