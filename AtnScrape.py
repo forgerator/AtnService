@@ -2,6 +2,9 @@ import scrapy
 from bs4 import BeautifulSoup
 from scrapy.http import Request
 from scrapy.http import FormRequest
+from scrapy.crawler import CrawlerProcess
+
+from AtnPlayer import AtnPlayer
 
 
 class AtnScrape(scrapy.Spider):
@@ -9,8 +12,8 @@ class AtnScrape(scrapy.Spider):
 
     name = 'Austin Tennis Net'
     start_urls = ['https://www.austintennisnet.org/player_login.php']
-    user = ''
-    password = ''
+    user = 'hbarlas'
+    password = 'testing123'
     players = []
 
     def parse(self, response):
@@ -22,7 +25,7 @@ class AtnScrape(scrapy.Spider):
     def after_login(self, response):
         # check login succeed before going on
         if "Access Denied" in str(response.body):
-            self.log("Login failed")
+            print("Login failed")
             return
         else:
             # continue scraping with authenticated session...
@@ -40,5 +43,15 @@ class AtnScrape(scrapy.Spider):
 
         for anchor in soup.find_all('a', href=lambda x: x and 'player_information.php?player_lookup_number' in x):
             player_name = str(anchor.contents[0]).replace("\\n", "").strip()
-            self.players.append(player_name)
-            print(player_name)
+            atn_player = AtnPlayer(0, player_name, 'test')
+            self.players.append(atn_player)
+            # print(player_name)
+
+
+if __name__ == "__main__":
+    process = CrawlerProcess({
+        'USER_AGENT': 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)'
+    })
+
+    process.crawl(AtnScrape)
+    process.start() # the script will block here until the crawling is finished
