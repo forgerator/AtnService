@@ -42,11 +42,10 @@ class AtnScrape(scrapy.Spider):
         soup = BeautifulSoup(response_str)
 
         for anchor in soup.find_all('a', href=lambda x: x and 'player_information.php?player_lookup_number' in x):
+            atn_id = str(anchor.attrs['href']).split("=")[1]
             player_name = str(anchor.contents[0]).replace("\\n", "").strip()
-            atn_player = AtnPlayer(0, player_name, 'test')
+            atn_player = AtnPlayer(atn_id, player_name, 'n/a')
             self.players.append(atn_player)
-            # print(player_name)
-
 
 if __name__ == "__main__":
     process = CrawlerProcess({
